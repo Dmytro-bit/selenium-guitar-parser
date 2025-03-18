@@ -4,11 +4,12 @@ import environs
 import pandas as pd
 import pymongo
 
+environs.env.read_env()
 
 class MongoDB:
     def __init__(self):
         self.client = pymongo.MongoClient(environs.env.str("MONGODB_URI"))
-        self.db = self.client["GuitarHero"]
+        self.db = self.client["GuitarHero2"]
         self.product_collection = self.db["products"]
         self.category_collection = self.db["categories"]
 
@@ -29,9 +30,9 @@ class MongoDB:
 if __name__ == "__main__":
     mongo = MongoDB()
 
-    df = pd.read_csv("shop_data/1__2 Size Classical Guitars.csv")
+    df = pd.read_csv("shop_data/3__4 Size Classical Guitars.csv")
 
-    category = mongo.get_category_by_name("1/2 Size Classical Guitars")
+    category = mongo.get_category_by_name("Acoustic Guitars")
 
     if category:
         category_id = category["_id"]  # Extract the _id field

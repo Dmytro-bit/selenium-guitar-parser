@@ -1,4 +1,3 @@
-
 from random import randint
 
 import pandas as pd
@@ -7,10 +6,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+
 class SeleniumParser:
     def __init__(self):
         self._driver = webdriver.Firefox()
-        self._wait = WebDriverWait(self._driver, 5)
+        self._wait = WebDriverWait(self._driver, 10)
 
     def __del__(self):
         self._driver.quit()
@@ -48,11 +48,15 @@ class SeleniumParser:
                     By.CLASS_NAME, "fx-content-product__main"
                 )
                 name = name_div.find_element(By.TAG_NAME, "h1").text
+                stage_links = self._driver.find_elements(By.CLASS_NAME, "stages__link")
 
                 item_data["name"] = name
-                item_data["price"] = self._driver.find_element(
-                    By.CLASS_NAME, "price"
-                ).text[1:]
+                item_data["brand"] = stage_links[-2].text
+
+                price_text = self._driver.find_element(By.CLASS_NAME, "price").text[1:].replace(",", "")
+                price_value = float(price_text)
+                item_data["price"] = f"{price_value:.2f}" if '.' in price_text else f"{int(price_value)}"
+
                 item_data["quantity"] = randint(1, 30)
 
                 try:
@@ -71,7 +75,7 @@ class SeleniumParser:
                         ).text
                         feature_value = feature.find_element(
                             By.CLASS_NAME, "fx-text--bold"
-                        ).text
+                        ).text.lower().strip()
 
                         if feature_name in params_keys:
                             features_dict[feature_name] = feature_value
